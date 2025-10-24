@@ -1,0 +1,425 @@
+{
+  "name": "Triagem de Atendimento",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d9d0310c-07a6-489b-848b-40dd8964b956",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "06720559-2137-4022-b3e7-635c81311599",
+      "name": "Webhook",
+      "webhookId": "d9d0310c-07a6-489b-848b-40dd8964b956"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b5e73715-e0b3-4b9e-ab2c-e72ea8017791",
+      "name": "When chat message received",
+      "webhookId": "8e7efa63-518f-4480-a5dd-e35240897028"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Você é um assistente de triagem de suporte altamente preciso. Analise a mensagem do usuário. Classifique a mensagem em um dos seguintes departamentos: \"Vendas\", \"Suporte Técnico\", \"Financeiro\" ou \"Outros\". Classifique o sentimento da mensagem como: \"Positivo\", \"Neutro\" ou \"Negativo\".  Responda APENAS com um objeto JSON válido, sem nenhum texto antes ou depois. O formato deve ser: {\"departamento\": \"...\", \"sentimento\": \"...\"}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "1a2c683e-3de6-4cff-961f-e983888065bf",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        64
+      ],
+      "id": "c8b07b02-ad29-44ad-aae4-c7ee3437edd6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "GXId75kD5IM7gfTG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const aiResponseString = $json.choices[0].message.content;\n\n  const parsedData = JSON.parse(aiResponseString);\n\n  return parsedData;\n\n} catch (error) {\n  return { departamento: \"Erro\", sentimento: \"Erro\", erro_ia: error.message };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "217467b5-2ecb-4159-9dd4-556bf43d323c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.departamento }}",
+                    "rightValue": "Suporte Técnico",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3ac7f729-dd66-49d0-9c94-aae1393f3f9a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "43a64c85-f425-499e-9f45-cf8e7ec0bac8",
+                    "leftValue": "={{ $json.departamento }}",
+                    "rightValue": "Vendas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        976,
+        -96
+      ],
+      "id": "6da70cb3-8863-4b92-bf15-6a888a585e4c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "=",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a987adc3-ee5a-40da-8c0d-4b8cdc0850ba"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1184,
+        -192
+      ],
+      "id": "6b253c7f-923b-4a07-b4c2-20ac8746a614",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "=",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a987adc3-ee5a-40da-8c0d-4b8cdc0850ba"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "22d6b2b4-3ddf-43d3-9f01-ca70caf85007",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "content": "## Triagem de Suporte \n\nClassifica atendimentos para separar departamentos e reconhecer sentimento do cliente"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -400
+      ],
+      "id": "a4cf102f-eb0b-41ea-99d5-aa0465d6aace",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1392,
+        -192
+      ],
+      "id": "fe61ecdf-3741-4bd3-8bbb-accd4c5f75ed",
+      "name": "Send a message",
+      "webhookId": "a3992e5c-9425-4d3a-a607-b40d61d5f3e7"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.trello",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "830ff0ab-d041-4cbd-aa6f-901732a6a2ec",
+      "name": "Create a card"
+    },
+    {
+      "parameters": {
+        "content": "O usuário entra em contato com o atendimento, a IA irá analisar a mensagem e classificar o departamento e sentimento",
+        "height": 96,
+        "width": 320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        -288
+      ],
+      "id": "4179983f-f81c-4c3a-94b2-06bf29331d7e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Tratamos as informações e verificamos se o atendimento é um suporte e o sentimento é negativo, enviamos diretamente para o atendimento no Slack",
+        "height": 112,
+        "width": 320,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -400
+      ],
+      "id": "8ea64c35-e160-4d20-bc9b-53415d41488c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Se não for um suporte técnico, e o sentimento não é negativo, será aberto um chamado no Trello",
+        "height": 80,
+        "width": 304,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        192
+      ],
+      "id": "13382f48-3ef8-4800-9c8e-8366211eeaaa",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Create a card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a8d74533-52e7-40c6-8e59-cabda12c533a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cf7ff3ee6c1236f323bd5b61ca244817540687153eaac3db9657db0418e01694"
+  },
+  "id": "BGel2x21P3mBjItx",
+  "tags": []
+}

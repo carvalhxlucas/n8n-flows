@@ -1,0 +1,277 @@
+{
+  "name": "Enriquecimento de Leads",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8fc64d6d-7397-4702-905d-5fc7b6e0ef35",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "041e55f6-c1e0-4393-9f8f-ef44e4629d7a",
+      "name": "Get row(s) in sheet"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        384,
+        0
+      ],
+      "id": "f6cb7c3c-f39d-4115-b921-a42fef392bd0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key"
+            },
+            {
+              "name": "cx"
+            },
+            {
+              "name": "q",
+              "value": "=Informações sobre a empresa {{ $json.Empresa }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        592,
+        128
+      ],
+      "id": "4f209a19-dc42-4bd0-bf14-59d396b84e77",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=Você é um analista de vendas B2B. Sua tarefa é qualificar um lead. Você receberá o nome da empresa e um \"snippet\" (resumo) de uma busca no Google sobre ela. Gere um parágrafo curto (2-3 frases) de \"Resumo de Qualificação\" para o time de vendas. Se o snippet for útil, resuma o que a empresa faz. Se o snippet for \"Nenhuma informação\", apenas diga que não foi possível qualificar. Responda APENAS com o parágrafo de resumo, sem \"Claro!\" ou \"Segue o resumo:"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Empresa: {{ $json.Empresa }}\nSnippet da Busca: {{ $json.items && $json.items.length > 0 ? $json.items[0].snippet : \"Nenhuma informação encontrada.\" }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        784,
+        128
+      ],
+      "id": "1f9ed0fa-4d98-4183-a643-0081d898c6f1",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        288
+      ],
+      "id": "85992d6a-1c88-4b95-9e71-d1d05c561633",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "GXId75kD5IM7gfTG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        -128
+      ],
+      "id": "72f82c1f-4d62-4a88-9f56-de9719af2d71",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        832,
+        -128
+      ],
+      "id": "338f6bdd-eb61-40bd-81ad-3d00edc0ec86",
+      "name": "Send a message",
+      "webhookId": "b74278a9-5cb5-4d56-99d5-7150c7373e29"
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $json;\n\nconst resumoIA = $json.choices[0].message.content;\n\nreturn {\n  \"Empresa\": lead.Empresa,\n  \"Email_Contato\": lead.EmailContato,\n  \"Resumo_da_Qualificacao\": resumoIA\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        128
+      ],
+      "id": "c45500a6-7fca-4efa-bc7a-f182d9a86de6",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7675e365-6d7e-4893-972b-d149c1b6851e",
+  "meta": {
+    "instanceId": "cf7ff3ee6c1236f323bd5b61ca244817540687153eaac3db9657db0418e01694"
+  },
+  "id": "TJVmKLlS9am7Mz5w",
+  "tags": []
+}
