@@ -11,9 +11,9 @@ Here is an overview of the workflows in this portfolio. Click the image or title
 | Preview | Workflow | Brief Description | Key Technologies |
 | :---: | :--- | :--- | :--- |
 | [![Mini-RAG Preview](./rag-validation/flow-preview.png)](./rag-validation/) | **Compliance Validation (Mini-RAG)** | A flow that uses RAG to validate an input JSON against a PDF of business rules. | `n8n` `AI` `Python` `VectorDB` |
-| [![Personal Assistant Preview](./personal-assistant/flow-preview.png)](./personal-assistant/) | **Personal Assistant** | Manages tasks like calendar rescheduling and adding items to a shopping list. | `n8n` `AI` `Google Calendar` `Todoist` |
-| [![AI Secretary Preview](./secretary/flow-preview.png)](./secretary/) | **AI Secretary (Healthcare)** | Schedules appointments for doctors, responding via audio and text on WhatsApp. | `n8n` `AI` `PostgreSQl` |
-| [![Support Triage Preview](./support-classifier/flow-preview.png)](./support-classifier/) | **Intelligent Support Triage** | Monitors a channel and uses AI to classify, prioritize, and route support tickets. | `n8n` `AI` `JS` |
+| [![Personal Assistant Preview](./personal-assistant/flow-preview-assistant.png)](./personal-assistant/) | **Personal Assistant** | Manages tasks like calendar rescheduling and adding items to a shopping list. | `n8n` `AI` `Google Calendar` `Todoist` |
+| [![AI Secretary Preview](./secretary/flow-preview-secretary.png)](./secretary/) | **AI Secretary (Healthcare)** | Schedules appointments for doctors, responding via audio and text on WhatsApp. | `n8n` `AI` `PostgreSQl` |
+| [![Support Triage Preview](./support-classifier/flow-preview-support.png)](./support-classifier/) | **Intelligent Support Triage** | Monitors a channel and uses AI to classify, prioritize, and route support tickets. | `n8n` `AI` `JS` |
 
 ---
 
