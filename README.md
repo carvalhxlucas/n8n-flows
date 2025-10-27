@@ -11,7 +11,7 @@ Here is an overview of the workflows in this portfolio. Click the image or title
 | Preview | Workflow | Brief Description | Key Technologies |
 | :---: | :--- | :--- | :--- |
 | [![Mini-RAG Preview](./rag-validation/flow-preview.png)](./rag-validation/) | **Compliance Validation (Mini-RAG)** | A flow that uses RAG to validate an input JSON against a PDF of business rules. | `n8n` `AI` `Python` `VectorDB` |
-| [![Secretary Preview](./support-triage/flow-preview.png)](./support-triage/) | **Secretary** | Monitors a channel and uses AI to classify, prioritize, and route support tickets. | `n8n` `AI` `Python` |
+| [![Secretary Preview](./support-triage/flow-preview.png)](./support-triage/) | **Secretary** | Monitors a channel and uses AI to classify, prioritize, and route support tickets. | `n8n` `AI` `Python` `PostgreSQL` |
 | [![Personal Assistant Preview](./news-scout/flow-preview.png)](./news-scout/) | **Personal Assistant** | An agent that scans news sources, selects the most relevant article, and generates a summary. | `n8n` `AI` `Python` |
 
 ---
