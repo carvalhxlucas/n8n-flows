@@ -2,7 +2,7 @@
 
 This workflow acts as an internal personal assistant for doctors, accessible 24/7 via a private Telegram bot. It is designed to process natural language to execute practice management and personal tasks.
 
-![Workflow Preview](./flow-preview.png)
+![Workflow Preview](./flow-preview-support.png)
 
 ---
 
