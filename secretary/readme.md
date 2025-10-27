@@ -2,7 +2,7 @@
 
 This workflow simulates an AI-powered secretary for medical clinics, capable of interacting with patients via WhatsApp to schedule, confirm, or cancel appointments. The flow is designed to understand both text and audio inputs.
 
-![Workflow Preview](./flow-preview.png)
+![Workflow Preview](./flow-preview-secretary.png)
 
 ---
 
